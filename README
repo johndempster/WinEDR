@@ -1,0 +1,36 @@
+The files contained in this archive are the source code for WinEDR.
+
+The have been compiled using Delphi V7.0. 
+
+To install the source code:
+
+Unpack this archive. Two folders (WinEDR and Components) are created within the ..\Borland\Delphi folder.
+
+The Components folder contains a number of components used by WinEDR. These must be installed on the Delphi component toolbar before you open the WinEDR project. 
+
+To install the components:
+
+If it is not already present, add the components folder to the Delphi library path.
+
+Select the Delphi Tools/Environment Options
+Select the "Library" panel
+Click "..." at the right of Library Path
+Add "$(Delphi)\SESComponents" to the library 
+Click the Add button.
+
+If it is not already installed, add the SESComponents package of components
+
+Select File/Open Project
+Select Files of Type "*.dpk"
+Select the "SESComponents" Folder
+ Select " SESComponents"
+Click the Install button
+
+Open the WinEDR project
+
+Select File/Open Project
+Select Files of Type "*.dpr"
+Select the "WinEDR" Folder
+ Select "WinEDR"
+Click the Open button
+
