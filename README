@@ -1,16 +1,16 @@
-The files contained in this archive are the source code for WinEDR.
 
-The have been compiled using Delphi V7.0. 
+WinEDR - Continuous Electrophysiology Signal Recording & Analysis Software
+--------------------------------------------------------------------------
 
-To install the source code:
 
-Unpack this archive. Two folders (WinEDR and Components) are created within the ..\Borland\Delphi folder.
+The Delphi V7.0 Integrated Development Environment is required to build this package.
 
-The Components folder contains a number of components used by WinEDR. These must be installed on the Delphi component toolbar before you open the WinEDR project. 
+This package requires the shared set components (SESComponents) used by the Strathclyde Electrophysiology software to be installed first.
+If it is not already installed on the Delphi toolbar, install it by ...
 
-To install the components:
+1) Extract the components from the johndempster/SESComponents GitHub repository to the folder ..\Borland\Delphi\SESComponents
 
-If it is not already present, add the components folder to the Delphi library path.
+2) Add the folder to the Delphi library path.
 
 Select the Delphi Tools/Environment Options
 Select the "Library" panel
@@ -18,19 +18,19 @@ Click "..." at the right of Library Path
 Add "$(Delphi)\SESComponents" to the library 
 Click the Add button.
 
-If it is not already installed, add the SESComponents package of components
+3) Build and install the SESComponents package of components on the Delphi toolbar.
 
 Select File/Open Project
 Select Files of Type "*.dpk"
 Select the "SESComponents" Folder
- Select " SESComponents"
-Click the Install button
+Select " SESComponents"
+Click the Compile button and then Install button.
 
-Open the WinEDR project
+To open the WinEDR project
 
 Select File/Open Project
 Select Files of Type "*.dpr"
 Select the "WinEDR" Folder
- Select "WinEDR"
+Select "WinEDR"
 Click the Open button
 
