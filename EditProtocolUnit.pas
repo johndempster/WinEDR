@@ -1319,6 +1319,7 @@ begin
 
     iRow := -1 ;
     KeepDACUpdateInterval := 0.0 ;
+    KeepNumPoints := 0 ;
     for i := 0 to MaxPars do if ParList[i].Index >= 0 then begin
         Inc(iRow) ;
 

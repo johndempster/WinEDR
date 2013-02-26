@@ -273,6 +273,10 @@ unit Mdiform;
                   CED Micro 1401 Mk3 now recognised and no. of A/D and D/A channel set correctly
   V3.3.2 09.11.12 Noise Analysis module updated. (Record Overlap option now works.Record time added to Records panel
                   Absolute time now show on display.Display no longer goes into loop setting zero levels AC=DC channel)
+  V3.3.3 15.02.13 Stimulator support added for Digidata 1440A interface
+                  sealtest.pas Page showing Rm,Ra,Cm now displayed as alternative to Gm,Ga,Cm
+                  Resistance/cell membrane parameters smoothing factor can now be set by user
+
   =======================================================================}
 
 interface
@@ -493,7 +497,7 @@ var
    i,ch : Integer ;
    FileName : String ;
 begin
-     Version := 'V3.3.2' ;
+     Version := 'V3.3.3' ;
      Caption := 'WinEDR - Strathclyde Electrophysiology Data Recorder ' + Version ;
 
       { Get directory which contains EDR program }

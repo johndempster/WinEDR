@@ -162,7 +162,7 @@ procedure TRecPlotFrm.PlotFrequency( Frequency : Single ) ;
 // Plot event frequency vs time
 // ------------------------------
 var
-    y,t,EventRate : single ;
+    y,t : single ;
 begin
 
     if PlotType <> ptFrequency then begin

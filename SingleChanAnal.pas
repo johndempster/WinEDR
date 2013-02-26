@@ -1831,6 +1831,7 @@ begin
     { Read records of data from file and add to histogram }
     Settings.DwellTimes.TCritical := edTCritical.Value ;
     NumOpeningsPerBurst := 0 ;
+    LastOpenTime := 0.0 ;
     EventNum := DwellTHist.StartAt ;
     Done := False ;
 

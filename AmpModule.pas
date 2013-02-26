@@ -6441,9 +6441,6 @@ function TAmplifier.getPrimaryChannelUnits(
 // ---------------------------------------
 // Get meaurement units of primary channel
 // ---------------------------------------
-var
-    ChanName,ChanUnits : String ;
-    ChanCalFactor,ChanScale : Single ;
 begin
     if (AmpNumber >= 0) and (AmpNumber < MaxAmplifiers) then begin
         if ClampMode = VClampMode then Result := FPrimaryChannelUnits[AmpNumber]
@@ -6459,9 +6456,6 @@ function TAmplifier.getSecondaryChannelUnits(
 // ---------------------------------------
 // Get meaurement units of Secondary channel
 // ---------------------------------------
-var
-    ChanName,ChanUnits : String ;
-    ChanCalFactor,ChanScale : Single ;
 begin
     if (AmpNumber >= 0) and (AmpNumber < MaxAmplifiers) then begin
         if ClampMode = VClampMode then Result := FSecondaryChannelUnits[AmpNumber]

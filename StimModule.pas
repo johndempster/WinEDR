@@ -1355,11 +1355,6 @@ begin
 
                   // Map old waveshapes to new
                   case i of
-                    0..9 : begin
-                        iElem := i ;        // DAC 0
-                        Prot^.NumAOChannels := Max(Prot^.NumAOChannels,1) ;
-                        iOut := 0 ;
-                        end ;
                     18..27 : begin
                         iElem := i - 8 ; // DAC 1
                         Prot^.NumAOChannels := Max(Prot^.NumAOChannels,2) ;
@@ -1371,7 +1366,12 @@ begin
                          Prot^.NumDOChannels := Max(Prot^.NumDOChannels,i-9) ;
                          iOut := i-8 ;
                          end ;
-
+                    else begin
+                        iElem := i ;        // DAC 0
+                        Prot^.NumAOChannels := Max(Prot^.NumAOChannels,1) ;
+                        iOut := 0 ;
+                        end ;
+                
                     end ;
 
                   Prot^.Stimulus[iElem].Waveshape := Ord(STIProg.Shape[i]) ;
@@ -1847,8 +1847,8 @@ begin
     XMLDOC.LoadFromFile( FileName ) ;
     XMLDoc.Active := True ;
 
-    for i := 0 to  xmldoc.DocumentElement.ChildNodes.Count-1 do
-        OutputDebugString( PChar(String(xmldoc.DocumentElement.ChildNodes[i].NodeName))) ;
+//    for i := 0 to  xmldoc.DocumentElement.ChildNodes.Count-1 do
+//       OutputDebugString( PChar(String(xmldoc.DocumentElement.ChildNodes[i].NodeName))) ;
 
     ProtNode := xmldoc.DocumentElement ;
 

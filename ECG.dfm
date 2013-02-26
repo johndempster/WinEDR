@@ -431,6 +431,7 @@ object ECGFrm: TECGFrm
           NumBytesPerSample = 2
           FixZeroLevels = False
           DisplaySelected = False
+          FontSize = 8
         end
         object lbRWave: TLabel
           Left = 16
@@ -544,6 +545,7 @@ object ECGFrm: TECGFrm
           NumBytesPerSample = 2
           FixZeroLevels = False
           DisplaySelected = False
+          FontSize = 8
         end
         object lbAvgI0Cursor: TLabel
           Left = 112
@@ -682,6 +684,7 @@ object ECGFrm: TECGFrm
           NumBytesPerSample = 2
           FixZeroLevels = False
           DisplaySelected = False
+          FontSize = 8
         end
         object lbSpecDisplay: TLabel
           Left = 352
@@ -852,10 +855,10 @@ object ECGFrm: TECGFrm
           PrinterFontName = 'Arial'
           PrinterLineWidth = 1
           PrinterMarkerSize = 5
-          PrinterLeftMargin = 18
-          PrinterRightMargin = 18
-          PrinterTopMargin = 12
-          PrinterBottomMargin = 12
+          PrinterLeftMargin = 17
+          PrinterRightMargin = 17
+          PrinterTopMargin = 11
+          PrinterBottomMargin = 11
           PrinterDisableColor = False
           MetafileWidth = 500
           MetafileHeight = 400
@@ -1181,10 +1184,10 @@ object ECGFrm: TECGFrm
           PrinterFontName = 'Arial'
           PrinterLineWidth = 1
           PrinterMarkerSize = 5
-          PrinterLeftMargin = 18
-          PrinterRightMargin = 18
-          PrinterTopMargin = 12
-          PrinterBottomMargin = 12
+          PrinterLeftMargin = 17
+          PrinterRightMargin = 17
+          PrinterTopMargin = 11
+          PrinterBottomMargin = 11
           PrinterDisableColor = False
           MetafileWidth = 500
           MetafileHeight = 400

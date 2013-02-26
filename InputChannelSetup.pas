@@ -329,9 +329,7 @@ procedure TInputChannelSetupFrm.FillChannelSettings ;
 // Fill channel calibration table
 // ------------------------------
 var
-   AmpNumber, ch,i : Integer ;
-   Name,Units : string ;
-   VPU,Gain : Single ;
+   AmpNumber, ch : Integer ;
 begin
 
      // Ensure channel calibration is matched to amplifier settings

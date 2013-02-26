@@ -1036,7 +1036,7 @@ procedure AppendEDRFile( FileName : string ) ;
 Const
      NumBlocksPerBuf = 256 ;
 var
-   i,ch,NumBuffersToAdd,NumBlocksRead,NumBlocksWrite : Integer ;
+   NumBuffersToAdd,NumBlocksRead,NumBlocksWrite : Integer ;
    NumBuffersDone : Integer ;
    OK, Done : boolean ;
    Buf : ^TSmallIntArray ;
@@ -1150,7 +1150,7 @@ Const
      NumBytesPerRecord = NumSamplesPerRecord*2 ;
 
 var
-   StartAt,i,j,ch,UseCh,NumBufsDone,NumBufsToCopy : Integer ;
+   StartAt,i,j,ch,NumBufsDone,NumBufsToCopy : Integer ;
    FileHandle : Integer ;
    OK,Done : Boolean ;
    Buf : ^TSmallIntArray ;
@@ -1265,7 +1265,7 @@ Const
      NumSamplesPerBuffer = 512 ;
 
 var
-   SampleNum,i,j,ch,UseCh : Integer ;
+   SampleNum,i,ch : Integer ;
    LineText : String ;
    Buf : ^TSmallIntArray ;
    ExportFile : TextFile ;

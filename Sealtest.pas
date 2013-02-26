@@ -74,7 +74,9 @@ unit Sealtest;
               Fixes bug introduced 16.01.12
   14.03.12 .. Output channels for test pulse now selected by check box and pulse can be
               applied to additional channels by ticking boxes.
-  17.04.12 .. No. of input channels displayed can now be selected from menu.              
+  17.04.12 .. No. of input channels displayed can now be selected from menu.
+  15.02.13 .. Page showing Rm,Ra,Cm now displayed as alternative to Gm,Ga,Cm
+              Resistance/cell membrane parameters smoothing factor can now be set by user
   ==================================================}
 
 interface
@@ -107,7 +109,6 @@ type
     CurrentGrp: TGroupBox;
     Label7: TLabel;
     Label8: TLabel;
-    CellGrp: TGroupBox;
     Timer: TTimer;
     PulseGrp: TGroupBox;
     rbUseHoldingVoltage1: TRadioButton;
@@ -131,24 +132,9 @@ type
     edIHold: TValidatedEdit;
     edIPulse: TValidatedEdit;
     scDisplay: TScopeDisplay;
-    CellParametersPage: TPageControl;
-    PipetteTab: TTabSheet;
-    Label9: TLabel;
-    edResistance: TValidatedEdit;
-    CellTab: TTabSheet;
-    Label15: TLabel;
-    Label17: TLabel;
-    Label16: TLabel;
-    edGaccess: TValidatedEdit;
-    edGmembrane: TValidatedEdit;
-    edCmembrane: TValidatedEdit;
     TimerGrp: TGroupBox;
     edTimer: TEdit;
     bResetTimer: TButton;
-    bSaveToLog: TButton;
-    GroupBox2: TGroupBox;
-    rbGaFromPeak: TRadioButton;
-    rbGaFromExp: TRadioButton;
     ckAutoScale: TCheckBox;
     edPulseheight3: TValidatedEdit;
     Label20: TLabel;
@@ -166,6 +152,31 @@ type
     ChannelsGrp: TGroupBox;
     cbNumChannels: TComboBox;
     Label10: TLabel;
+    CellGrp: TGroupBox;
+    Label22: TLabel;
+    CellParametersPage: TPageControl;
+    PipetteTab: TTabSheet;
+    Label9: TLabel;
+    edResistance: TValidatedEdit;
+    CellTab: TTabSheet;
+    Label15: TLabel;
+    Label17: TLabel;
+    Label16: TLabel;
+    edGaccess: TValidatedEdit;
+    edGmembrane: TValidatedEdit;
+    edCmembrane: TValidatedEdit;
+    CellRTab: TTabSheet;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label21: TLabel;
+    edRAccess: TValidatedEdit;
+    edRMembrane: TValidatedEdit;
+    edCMembrane1: TValidatedEdit;
+    bSaveToLog: TButton;
+    GroupBox2: TGroupBox;
+    rbGaFromPeak: TRadioButton;
+    rbGaFromExp: TRadioButton;
+    edSmoothingFactor: TValidatedEdit;
     procedure TimerTimer(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure edHoldingVoltage1KeyPress(Sender: TObject; var Key: Char);
@@ -195,6 +206,7 @@ type
     procedure rbVclampClick(Sender: TObject);
     procedure rbIclampClick(Sender: TObject);
     procedure cbNumChannelsChange(Sender: TObject);
+    procedure edSmoothingFactorKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   ADC : PSmallIntArray ;
@@ -363,6 +375,7 @@ begin
 
      // Ensure smoothing factor is valid
      Settings.SealTest.SmoothingFactor := Min(Max(Settings.SealTest.SmoothingFactor,0.1),1.0) ;
+     edSmoothingFactor.Value := 1.0/Settings.SealTest.SmoothingFactor ;
 
      scDisplay.xMin := 0 ;
      scDisplay.xMax := NumTestSamples-1  ;
@@ -471,7 +484,7 @@ procedure TSealTestFrm.TimerTimer(Sender: TObject);
   ---------------------}
 
 var
-   ich,ch,T : Integer ;
+   ch,T : Integer ;
    OldADCUnits : Array[0..MaxChannels-1] of String ;
    OldADCName : Array[0..MaxChannels-1] of String ;
    Changed : Boolean ;
@@ -521,7 +534,7 @@ begin
 
                    // Update Amplifier #1 gain display
 
-                   ich := cbCurrentChannel.ItemIndex ;
+                   //ich := cbCurrentChannel.ItemIndex ;
                    if ClampMode[cbAmplifier.ItemIndex] <>
                       Amplifier.ClampMode[cbAmplifier.ItemIndex] then SetClampMode ;
 
@@ -529,8 +542,8 @@ begin
                    if Amplifier.GainTelegraphAvailable[cbAmplifier.ItemIndex] or
                       NewAmplifierGain then begin
                       // Display current amplifier gain
-                      if Main.SESLabIO.LabInterfaceType = Triton then iCh := 1
-                                                                 else iCh := 0 ;
+                      //if Main.SESLabIO.LabInterfaceType = Triton then iCh := 1
+                      //                                           else iCh := 0 ;
                       edAmplifierGain.Units := 'V/' + Amplifier.PrimaryChannelUnits[cbAmplifier.ItemIndex,ClampMode[cbAmplifier.ItemIndex]] ;
                       edAmplifierGain.Value := Amplifier.PrimaryChannelScaleFactor[cbAmplifier.ItemIndex] ;
                       NewAmplifierGain := False ;
@@ -925,7 +938,7 @@ begin
          Sum := Sum + ADC^[j] ;
          end ;
      Avg := Sum/(EndofVHold+1) ;
-     HoldLevel := Round(Avg) ;
+     //HoldLevel := Round(Avg) ;
      VHold := (Avg - VZero)*VScale ;
 
      // Holding current
@@ -1076,9 +1089,13 @@ begin
      if GAccess > 1E-14 then begin
         if ResetReadout then edGAccess.Value := GAccess ;
         edGAccess.Value := Settings.SealTest.SmoothingFactor*GAccess +
-                           (1.0 - Settings.SealTest.SmoothingFactor)*edGAccess.Value
+                           (1.0 - Settings.SealTest.SmoothingFactor)*edGAccess.Value ;
+        edRAccess.Value := 1.0 / edGAccess.Value ;
         end
-     else edGAccess.Value := 0.0 ;
+     else begin
+        edGAccess.Value := 0.0 ;
+        edRAccess.Value := 1E30 ;
+        end ;
      if edGAccess.Value < 1E-14 then Exit ;
      Main.Ga := edGAccess.Value ;
 
@@ -1088,8 +1105,12 @@ begin
         if ResetReadout then edGmembrane.Value := GMembrane ;
         edGmembrane.Value := Settings.SealTest.SmoothingFactor*GMembrane +
                              (1.0 - Settings.SealTest.SmoothingFactor)*edGmembrane.Value ;
+        edRmembrane.Value := 1 / edGmembrane.Value ;
         end
-     else edGmembrane.Value := 0.0 ;
+     else begin
+        edGmembrane.Value := 0.0 ;
+        edRmembrane.Value := 1E30 ;
+        end ;
      if edGmembrane.Value < 1E-14 then Exit ;
      Main.Gm := edGmembrane.Value ;
 
@@ -1100,8 +1121,12 @@ begin
         if ResetReadout then EdCmembrane.Value := Capacity ;
         EdCmembrane.Value := Settings.SealTest.SmoothingFactor*Capacity +
                              (1.0 - Settings.SealTest.SmoothingFactor)*EdCmembrane.Value ;
+        EdCmembrane1.Value := EdCmembrane.Value ;
         end
-     else EdCmembrane.Value := 0.0 ;
+     else begin
+        EdCmembrane.Value := 0.0 ;
+        EdCmembrane1.Value := EdCmembrane.Value ;
+        end ;
      Main.Cm := EdCmembrane.Value ;
 
      except
@@ -1597,6 +1622,7 @@ procedure TSealTestFrm.SetSmoothingFactor( Value : Single ) ;
 // -----------------------------------
 begin
      Settings.SealTest.SmoothingFactor := Min(Max(Value,0.1),1.0) ;
+     edSmoothingFactor.Value := 1.0 / Max(Settings.SealTest.SmoothingFactor,0.1) ;
      end ;
 
 
@@ -1687,5 +1713,16 @@ begin
      NumTestChannels := Max( cbNumChannels.ItemIndex + 1,1) ;
      UpdateChannelLists ;
      end;
+
+procedure TSealTestFrm.edSmoothingFactorKeyPress(Sender: TObject;
+  var Key: Char);
+// -----------------------------------
+// Set cell parameter smoothing factor
+// -----------------------------------
+begin
+    if Key = #13 then begin
+       Settings.SealTest.SmoothingFactor := 1.0 / edSmoothingFactor.Value
+       end ;
+     end ;
 
 end.

@@ -66,7 +66,6 @@ type
     ADC : ^TSmallIntArray ;
     DispBuf : ^TSmallIntArray ;
     BuffersAllocated : Boolean ;
-    HorCursors : Array[0..MaxLines-1] of Integer ;
     CompressionBlockSize : Integer ; // No. sample points in compression block
     NumPointsPerLine : Integer ;     // No. sample points per line
     procedure HeapBuffers( Operation : THeapBufferOp ) ;
@@ -542,7 +541,7 @@ procedure TPageViewFrm.PrintDisplay ;
   Print displayed page(s)
   ------------------------ }
 var
-   i,iPage,NumPages : Integer ;
+   iPage,NumPages : Integer ;
    PageDuration : Single ;
    PageStartTime : Single ;
 begin
@@ -605,7 +604,6 @@ procedure TPageViewFrm.CopyImageToClipboard ;
   Copy displayed page to Windows clipboard
   ---------------------------------------- }
 var
-   i : Integer ;
    PageDuration : Single ;
 begin
 

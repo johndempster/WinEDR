@@ -3061,7 +3061,7 @@ procedure TNoiseAnalFrm.edRecordOverlapKeyPress(Sender: TObject;
 // Record overlap changed
 // ----------------------
 var
-   QuarterRecord,OldPos,OldMax : Integer ;
+   QuarterRecord : Integer ;
    OldFraction : Double ;
 begin
      if Key = #13 then begin

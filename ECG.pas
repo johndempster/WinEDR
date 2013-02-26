@@ -357,9 +357,8 @@ const
     NumScansPerBuf = 256 ;
 var
     SelCh : Integer ;
-    i,iEnd,jIn,jOut,ch : Integer ;
+    i,jIn,jOut,ch : Integer ;
     Done : Boolean ;
-    FirstSample : Boolean ;
     StartScan : Integer ;
     EndScan : Integer ;
     InScan : Integer ;

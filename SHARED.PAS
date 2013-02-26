@@ -544,7 +544,6 @@ var
    CharWidth,CharHeight,ColHeight,Row,Col,w : Integer ;
    PageLeft,PageTop,PageBottom,Line,ColLeft,PageNum,LastPage : Integer ;
    ColWidth : Array[0..20] of Integer ;
-   NewPage : boolean ;
 begin
 
      Screen.Cursor := crHourglass ;
@@ -577,6 +576,7 @@ begin
      { Calculate number of pages to be printed }
      LastPage := 0 ;
      PageNum := 1 ;
+     Line := PageTop + ColHeight*3 ;
      for row := 0 to Table.RowCount-1 do begin
          if LastPage <> PageNum then begin
             Line := PageTop + ColHeight*3 ;
@@ -588,8 +588,6 @@ begin
 
      { Print table
        ===========}
-
-
 
      PageNum := -1 ;
      for row := 0 to Table.RowCount-1 do begin
@@ -603,7 +601,7 @@ begin
             Line := Line + ColHeight ;
             printer.canvas.textout(PageLeft,Line, CDRfH.IdentLine) ;
             Line := Line + ColHeight*2 ;
-            NewPage := False ;
+            //NewPage := False ;
             end ;
 
          { Print row }
@@ -731,7 +729,7 @@ procedure PrintPageTitle(
   Print experiment identification and other information
   -----------------------------------------------------}
 var
-   xPix,yPix,CharWidth,LineHeight,Row : Integer ;
+   xPix,yPix,LineHeight,Row : Integer ;
    OldFontName : String ;
    OldFontSize : Integer ;
 
@@ -744,7 +742,7 @@ begin
      Canvas.Font.Name := 'Arial' ;
      Canvas.Font.Size := 10 ;
 
-     CharWidth := Canvas.TextWidth('X') ;
+     //CharWidth := Canvas.TextWidth('X') ;
      LineHeight := (Canvas.TextHeight('X')*12) div 10 ;
 
      { Start printing a top-left of page }

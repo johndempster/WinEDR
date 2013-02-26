@@ -62,7 +62,8 @@ unit Rec;
   17.08.12 ... Resistance pulse plot now works in both current- and voltage- clamp mode
   28.08.12 ... Zero levels popup settings box added (on right-click over channel)
                Fixed zero levels option no longer sets levelsd to zero (only holds constant)
-  10.01.13 ... VCLAMP/ICLAMP button now correctly responds to changes in clamp mode for amplifier #2             
+  10.01.13 ... VCLAMP/ICLAMP button now correctly responds to changes in clamp mode for amplifier #2
+  12.02.13 ... Stimulus support added for Digidata 1440A          
   ==============================================================================}
 interface
 
@@ -336,7 +337,7 @@ type
     { Private declarations }
     NewAmplifierGain : Boolean ;
 
-    FileName : String ;           // Data file in use for recording
+    //FileName : String ;           // Data file in use for recording
 
     WriteBufs : TWriteBufs ;      // Circular A/D data buffer control record
 
@@ -399,7 +400,7 @@ type
     procedure CalculateResistance ;
     procedure CalculateCapacity ;
     procedure UpdateAmplifierGain ;
-    procedure GetAmplifierGainsFromTextBox ;
+    //procedure GetAmplifierGainsFromTextBox ;
     procedure UpdateChannelSettings ;
     procedure DisplayClampMode ;
     procedure DisplayAmplifierGainAndMode(
@@ -513,7 +514,8 @@ begin
      if (Main.SESLabIO.LabInterfaceType = NationalInstruments) or  // National Instruments
         (Main.SESLabIO.LabInterfaceType = NIDAQMX) or
         (Main.SESLabIO.LabInterfaceType = CED1401_12) or           // CED 1401
-        (Main.SESLabIO.LabInterfaceType = CED1401_16) then
+        (Main.SESLabIO.LabInterfaceType = CED1401_16) or
+        (Main.SESLabIO.LabInterfaceType = Digidata1440) then
         StimulatorAvailable := True
      else StimulatorAvailable := False ;
 
@@ -849,7 +851,7 @@ begin
      end ;
 
 
-procedure TRecordFrm.GetAmplifierGainsFromTextBox ;
+{procedure TRecordFrm.GetAmplifierGainsFromTextBox ;
 // -----------------------------------------------
 // Update amplifier gains with user-entered values
 // -----------------------------------------------
@@ -863,7 +865,7 @@ begin
     if Amp3Tab.Visible then
        Amplifier.PrimaryChannelScaleFactor[3] := edAmplifierGain3.Value ;
     NewAmplifierGain := True ;
-    end ;
+    end ;  }
 
 
 procedure TRecordFrm.TimerTimer(Sender: TObject);
@@ -874,7 +876,7 @@ var
    i,iEnd,NumNewScans,NewScan : Integer ;
    iTicks : Integer ;
    FilePointer : Integer ;
-   ProcessingTime : Single ;
+   //ProcessingTime : Single ;
    StimulusTime : Single ;
 begin
 
@@ -924,7 +926,7 @@ begin
              Inc(NumNewScans) ;
              end ;
 
-     outputdebugString(PChar(format('%d %d %d',[WriteBufs.NumSamples,WriteBufs.NumSamplesPerBuf,NumNewScans]))) ;
+     //outputdebugString(PChar(format('%d %d %d',[WriteBufs.NumSamples,WriteBufs.NumSamplesPerBuf,NumNewScans]))) ;
         // Calculate computed channels
         if NumNewScans >= 2 then begin
            CalcComputedChannels ;
@@ -972,7 +974,7 @@ begin
            WriteBufs.WriteBuf := WriteBufs.WriteBuf + 1 ;
            if WriteBufs.WriteBuf >= WriteBufs.NumBufs then WriteBufs.WriteBuf := 0 ;
 
-           ProcessingTime := (100.0*SumProcTime/nProcTime)/Timer.Interval ;
+           //ProcessingTime := (100.0*SumProcTime/nProcTime)/Timer.Interval ;
            end ;
 
         if WriteBufs.Recording and
@@ -1031,7 +1033,7 @@ procedure TRecordFrm.DisplayLive(
 var
 
     NumScans : Integer ;           // No. of multi-channel scans in display window
-    NumSamplesPerBlock : Integer ; // No. of A/D samples per compression block
+    //NumSamplesPerBlock : Integer ; // No. of A/D samples per compression block
     Done : Boolean ;               // Loop done flag
     ch,y : Integer ;             // Counters/index variables
     Value : Single ;
@@ -1049,7 +1051,7 @@ begin
 
        // Size of display compression block
        WriteBufs.NumScansPerBlock := (NumScans div MaxDisplayScans) + 1 ;
-       NumSamplesPerBlock := WriteBufs.NumScansPerBlock*Main.SESLabIO.ADCNumChannels ;
+       //NumSamplesPerBlock := WriteBufs.NumScansPerBlock*Main.SESLabIO.ADCNumChannels ;
 
        // No. of displayed points per block
        WriteBufs.NumPointsPerBlock := Min(WriteBufs.NumScansPerBlock,2) ;
@@ -1188,7 +1190,7 @@ const
 var
 
    ExtTrigger : Boolean ;
-   i,ch : Integer ;
+   i : Integer ;
    MaxScans : Integer ;     // Max. number of scans in A/D buffer
    Done : Boolean ;         // Loop termination flag
 begin
@@ -2070,19 +2072,16 @@ procedure TRecordFrm.DisplaySignalLevels(
 { -------------------------------------------------------
   Display signal levels for a block of input channels
   ------------------------------------------------------- }
-var
-   ch : Integer ;
-   Value : single ;
 begin
 
-     for ch := 0 to Main.SESLabIO.ADCNumChannels-1 do begin
-         Value := (Buf[StartAt+Main.SESLabIO.ADCChannelOffset[ch]] - Main.SESLabIO.ADCChannelZero[ch])
-                  * Main.SESLabIO.ADCChannelUnitsPerBit[ch] ;
+   //  for ch := 0 to Main.SESLabIO.ADCNumChannels-1 do begin
+      //   Value := (Buf[StartAt+Main.SESLabIO.ADCChannelOffset[ch]] - Main.SESLabIO.ADCChannelZero[ch])
+      //            * Main.SESLabIO.ADCChannelUnitsPerBit[ch] ;
    {      lbReadOut.Add( format('%s=%7.4g %s ',
                         [RecChannel[ch].ADCName,
                          Value,
                          RecChannel[ch].ADCUnits] )) ;}
-         end ;
+      //   end ;
      {lbReadOut.Invalidate ;}
      end ;
 
@@ -2115,8 +2114,6 @@ procedure TRecordFrm.bRecordClick(Sender: TObject);
   Start recording to file
   ----------------------- }
 var
-  Name,Units : string ;
-  VPU,Gain : single ;
   ch : Integer ;
 begin
 
@@ -2490,7 +2487,7 @@ var
 begin
     if Main.SESLabIO.ADCActive then begin
        { Update zero level }
-       ch := scDisplay.ActiveHorizontalCursor ;
+       //ch := scDisplay.ActiveHorizontalCursor ;
 //       if ch >= 0 then Main.SESLabIO.ADCChannelZero[ch] := scDisplay.HorizontalCursors[ch] ;
        for ch := 0 to scDisplay.NumChannels-1 do begin
           { Get signal baseline cursor }
@@ -2953,9 +2950,6 @@ procedure TRecordFrm.DisplayAmplifierGainAndMode(
 // ------------------------------------------
 // Set amplifier gain and clamp mode controls
 // ------------------------------------------
-var
-    Units : String ;
-    Scale : Single ;
 begin
 
     if Amplifier.AmplifierType[AmpNumber] = amNone then begin
