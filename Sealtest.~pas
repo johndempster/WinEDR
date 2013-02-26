@@ -297,7 +297,6 @@ const
      VoltageClampUnits = 'mV' ;
      VoltageClampScale = 1E3 ;
 
-
 procedure TSealTestFrm.FormShow(Sender: TObject);
 { ----------------
   Initialise form
@@ -474,15 +473,6 @@ begin
          // Voltage channel (units= mV)
          if ANSIContainsText(Main.SESLabIO.ADCChannelUnits[ch],'V') then
             cbVoltageChannel.ItemIndex := ch ;
-         end ;
-
-     scDisplay.ClearHorizontalCursors ;
-     for ch := 0 to NumTestChannels-1 do begin
-         Main.SESLabIO.ADCChannelZero[ch] := 0 ;
-         { Create horizontal cursors }
-         scDisplay.AddHorizontalCursor(ch,Settings.Colors.Cursors,True,'z') ;
-         scDisplay.yMax[ch] := Main.SESLabIO.ADCMaxValue ;
-         scDisplay.yMin[ch] := Main.SESLabIO.ADCMinValue ;
          end ;
 
      end ;
@@ -1731,7 +1721,7 @@ procedure TSealTestFrm.edSmoothingFactorKeyPress(Sender: TObject;
 // -----------------------------------
 begin
     if Key = #13 then begin
-       Settings.SealTest.SmoothingFactor := 1.0 / edSmoothingFactor.Value ;
+       Settings.SealTest.SmoothingFactor := 1.0 / edSmoothingFactor.Value
        end ;
      end ;
 
