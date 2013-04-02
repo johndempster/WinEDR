@@ -277,8 +277,6 @@ unit Mdiform;
                   sealtest.pas Page showing Rm,Ra,Cm now displayed as alternative to Gm,Ga,Cm
                   Resistance/cell membrane parameters smoothing factor can now be set by user
   V3.3.4 11.03.13 FP error on import of .CHT files fixed
-  V3.3.5 02.04.13 Free Run / External trigger setting now remembered when record form closed (rec.pas)
-                  Invalid amplifier types now set to None when loaded from XML file and also when GetModelName called.
 
   =======================================================================}
 
@@ -500,7 +498,7 @@ var
    i,ch : Integer ;
    FileName : String ;
 begin
-     Version := 'V3.3.5' ;
+     Version := 'V3.3.4' ;
      Caption := 'WinEDR - Strathclyde Electrophysiology Data Recorder ' + Version ;
 
       { Get directory which contains EDR program }
