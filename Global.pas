@@ -337,6 +337,26 @@ TRTResistanceSettings = record
               StimulusUnits : string ;
               end ;
 
+TSimEPCSettings = record
+    Duration : Single ;
+    Amplitude : Single ;
+    AmplitudeSD : Single ;
+    TauRise : Single ;
+    TauDecay : Single ;
+    NoiseSD : Single ;
+    Frequency : Single ;
+    FrequencySD : Single ;
+    Delay : Single ;
+    RandomEvents : Boolean ;
+    SineAmplitude : Single ;
+    SineFrequency : Single ;
+    ReleaseProbability : Single ;
+    ReleasablePool : Single ;
+    Depression : Single ;
+    TauDepression : Single ;
+    UnitsIndex : Integer ;
+    end ;
+
 
 TCED1902 = record
            ComPort : LongInt ;
@@ -431,6 +451,7 @@ TSettings = record
           PageViewLinesPerPage : Integer ;
           PageViewLineDuration : Single ;
           NewCalculation : Boolean ;
+          SimEPC : TSimEPCSettings ;
           end ;
 
 TBuf = class(TObject)

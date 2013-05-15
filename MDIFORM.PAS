@@ -279,7 +279,9 @@ unit Mdiform;
   V3.3.4 11.03.13 FP error on import of .CHT files fixed
   V3.3.5 02.04.13 Free Run / External trigger setting now remembered when record form closed (rec.pas)
                   Invalid amplifier types now set to None when loaded from XML file and also when GetModelName called.
-
+  V3.3.6 30.04.13 simmepc.pas Post synaptic current simulation now supports fixed intervals between events
+                  and settings are saved in INI file.
+   V3.3.7 15.05.13 simmepc.pas Binomial release probability and depression/facilitation added to fixed frequency trains
   =======================================================================}
 
 interface
@@ -500,7 +502,7 @@ var
    i,ch : Integer ;
    FileName : String ;
 begin
-     Version := 'V3.3.5' ;
+     Version := 'V3.3.7' ;
      Caption := 'WinEDR - Strathclyde Electrophysiology Data Recorder ' + Version ;
 
       { Get directory which contains EDR program }
@@ -726,6 +728,26 @@ begin
 
      Settings.PageViewLinesPerPage := 8 ;
      Settings.PageViewLineDuration := 1.0 ;
+
+    // Simulated post-synaptic current settings
+    Settings.SimEPC.Duration := 10.0 ;
+    Settings.SimEPC.Amplitude := 1.0 ;
+    Settings.SimEPC.AmplitudeSD := 0.1 ;
+    Settings.SimEPC.TauRise := 1E-4 ;
+    Settings.SimEPC.TauDecay := 2E-3 ;
+    Settings.SimEPC.NoiseSD := 0.05 ;
+    Settings.SimEPC.Frequency := 10.0 ;
+    Settings.SimEPC.FrequencySD := 0.0 ;
+    Settings.SimEPC.Delay := 0.0 ;
+    Settings.SimEPC.RandomEvents := True ;
+    Settings.SimEPC.SineAmplitude := 0.0 ;
+    Settings.SimEPC.SineFrequency := 50.0 ;
+    Settings.SimEPC.UnitsIndex := 0 ;
+    Settings.SimEPC.ReleaseProbability := 1.0 ;
+    Settings.SimEPC.ReleasablePool := 100 ;
+    Settings.SimEPC.Depression := 0.0 ;
+    Settings.SimEPC.TauDepression := 1.0  ;
+
 
     Cm := 0.0 ;
     Gm := 0.0 ;

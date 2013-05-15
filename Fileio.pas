@@ -48,6 +48,9 @@ unit Fileio;
               Settings.RecordDuration now stored in INI file
   09.07.12 .. RecChannel settings removed from INI file
   08.08.12 .. 'EFCOUNTI=' Settings.RTEventAnalysis.CountInterval added to INI file
+  30.04.13 .. SIMEPC settings added to INI file
+  14.05.13 .. SIMEPC.UnitsIndex added to INI file
+  15.05.13 .. SIMEPC.ReleaseProbability etc added  to INI file
   }
 
 
@@ -722,6 +725,25 @@ begin
      // Currently selected stimulus file
      ReadString( Header, 'STIMFILE=', Settings.VProgramFileName ) ;
 
+     // Load post-synaptic current simulation settings
+     ReadFloat( Header, 'EPCDUR=', Settings.SimEPC.Duration) ;
+     ReadFloat( Header, 'EPCAMP=', Settings.SimEPC.Amplitude) ;
+     ReadFloat( Header, 'EPCAMPSD=', Settings.SimEPC.AmplitudeSD) ;
+     ReadFloat( Header, 'EPCTRISE=', Settings.SimEPC.TauRise) ;
+     ReadFloat( Header, 'EPCTDECAY=', Settings.SimEPC.TauDecay) ;
+     ReadFloat( Header, 'EPCNOISESD=', Settings.SimEPC.NoiseSD) ;
+     ReadFloat( Header, 'EPCFREQ=', Settings.SimEPC.Frequency) ;
+     ReadFloat( Header, 'EPCFREQSD=', Settings.SimEPC.FrequencySD) ;
+     ReadFloat( Header, 'EPCDEL=', Settings.SimEPC.Delay ) ;
+     ReadFloat( Header, 'EPCSINEAMP=', Settings.SimEPC.SineAmplitude) ;
+     ReadFloat( Header, 'EPCSINEFREQ=', Settings.SimEPC.SineFrequency) ;
+     ReadLogical( Header, 'EPCRAND=', Settings.SimEPC.RandomEvents) ;
+     ReadInt( Header, 'EPCUNITS=', Settings.SimEPC.UnitsIndex) ;
+     ReadFloat( Header, 'EPCPROB=', Settings.SimEPC.ReleaseProbability) ;
+     ReadFloat( Header, 'EPCPOOL=', Settings.SimEPC.ReleasablePool) ;
+     ReadFloat( Header, 'EPCDEP=', Settings.SimEPC.Depression) ;
+     ReadFloat( Header, 'EPCTAUDEP=', Settings.SimEPC.TauDepression) ;
+
      FileClose( IniFileHandle ) ;
 
      end ;
@@ -911,6 +933,27 @@ begin
 
      // Currently selected stimulus file
      AppendString( Header, 'STIMFILE=', Settings.VProgramFileName ) ;
+
+     // Save post-synaptic current simulation settings
+     AppendFloat( Header, 'EPCDUR=', Settings.SimEPC.Duration) ;
+     AppendFloat( Header, 'EPCAMP=', Settings.SimEPC.Amplitude) ;
+     AppendFloat( Header, 'EPCAMPSD=', Settings.SimEPC.AmplitudeSD) ;
+     AppendFloat( Header, 'EPCTRISE=', Settings.SimEPC.TauRise) ;
+     AppendFloat( Header, 'EPCTDECAY=', Settings.SimEPC.TauDecay) ;
+     AppendFloat( Header, 'EPCNOISESD=', Settings.SimEPC.NoiseSD) ;
+     AppendFloat( Header, 'EPCFREQ=', Settings.SimEPC.Frequency) ;
+     AppendFloat( Header, 'EPCFREQSD=', Settings.SimEPC.FrequencySD) ;     
+     AppendFloat( Header, 'EPCDEL=', Settings.SimEPC.Delay ) ;
+     AppendFloat( Header, 'EPCSINEAMP=', Settings.SimEPC.SineAmplitude) ;
+     AppendFloat( Header, 'EPCSINEFREQ=', Settings.SimEPC.SineFrequency) ;
+     AppendLogical( Header, 'EPCRAND=', Settings.SimEPC.RandomEvents) ;
+     AppendInt( Header, 'EPCUNITS=', Settings.SimEPC.UnitsIndex) ;
+     AppendFloat( Header, 'EPCPROB=', Settings.SimEPC.ReleaseProbability) ;
+     AppendFloat( Header, 'EPCPOOL=', Settings.SimEPC.ReleasablePool) ;
+     AppendFloat( Header, 'EPCDEP=', Settings.SimEPC.Depression) ;
+     AppendFloat( Header, 'EPCTAUDEP=', Settings.SimEPC.TauDepression) ;
+
+
 
      if FileWrite( IniFileHandle, Header, Sizeof(Header) ) <> Sizeof(Header) then
         ShowMessage( IniFileName + ' Write - Failed ' ) ;

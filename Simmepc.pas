@@ -19,6 +19,11 @@ unit Simmepc;
                when number of channels is reduced
   24.6.03 .... No. horizontal/vertical grid lines changeable
   04.02.07 ... Zero level now set to zero.
+  30.04.13 ... Random number generator now initialised when form opened
+               Fixed intervals between PSCs now supported as well as random
+               Optional delay added before events start
+               Settings saved in INI file
+  15.05.13 ... Binomial release probability and depression/facilitation added to fixed frequency trains
   }
 
 interface
@@ -48,11 +53,8 @@ type
     GroupBox4: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
-    RecCondGrp: TGroupBox;
     Label11: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
-    Label9: TLabel;
     SineWaveGrp: TGroupBox;
     Label10: TLabel;
     Label5: TLabel;
@@ -62,10 +64,30 @@ type
     edStDev: TValidatedEdit;
     edTauRise: TValidatedEdit;
     edTauDecay: TValidatedEdit;
-    edTauInterval: TValidatedEdit;
-    edNoiseRMS: TValidatedEdit;
     edSineAmplitude: TValidatedEdit;
     edSineFrequency: TValidatedEdit;
+    GroupBox2: TGroupBox;
+    rbRandom: TRadioButton;
+    Label6: TLabel;
+    edFrequency: TValidatedEdit;
+    rbFixed: TRadioButton;
+    lbDelay: TLabel;
+    edInitialDelay: TValidatedEdit;
+    PanFrequencySD: TPanel;
+    Label4: TLabel;
+    edFrequencySD: TValidatedEdit;
+    cbUnits: TComboBox;
+    Label8: TLabel;
+    Label12: TLabel;
+    edDepression: TValidatedEdit;
+    Label13: TLabel;
+    edTauDepression: TValidatedEdit;
+    edReleaseProbability: TValidatedEdit;
+    Label14: TLabel;
+    Label15: TLabel;
+    edReleasablePool: TValidatedEdit;
+    Label9: TLabel;
+    edNoiseRMS: TValidatedEdit;
     procedure bStartClick(Sender: TObject);
     procedure bAbortClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -73,6 +95,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
     procedure scDisplayCursorChange(Sender: TObject);
+    procedure rbRandomClick(Sender: TObject);
+    procedure rbFixedClick(Sender: TObject);
+    procedure cbUnitsChange(Sender: TObject);
   private
     { Private declarations }
     Sim : TSim ;
@@ -83,6 +108,8 @@ type
                               NumSamples,NumChannels : Integer ;
                               CutOffFrequency : single ;
                               var FirstCall : Boolean ) ;
+    function binomial( pIn, n : Single ) : Single ;
+    function gammln( xx : Single ) : Single ;
   public
     { Public declarations }
     procedure ChangeDisplayGrid ;
@@ -117,7 +144,32 @@ begin
      bStart.Enabled := True ;
      bAbort.Enabled := False ;
 
-     Channel[0].ADCUnits := 'nA' ;
+     cbUnits.Clear ;
+     cbUnits.Items.Add('pA') ;
+     cbUnits.Items.Add('nA') ;
+
+    // Get settings
+    edSimDuration.Value :=  Settings.SimEPC.Duration ;
+    edAmplitude.Value := Settings.SimEPC.Amplitude ;
+    edStDev.Value := Settings.SimEPC.AmplitudeSD ;
+    edTauRise.Value := Settings.SimEPC.TauRise ;
+    edTauDecay.Value := Settings.SimEPC.TauDecay ;
+    edNoiseRMS.Value := Settings.SimEPC.NoiseSD ;
+    edFrequency.Value := Settings.SimEPC.Frequency ;
+    edFrequencySD.Value := Settings.SimEPC.FrequencySD ;
+    edInitialDelay.Value := Settings.SimEPC.Delay ;
+    rbRandom.Checked := Settings.SimEPC.RandomEvents ;
+    rbFixed.Checked := not rbRandom.Checked ;
+    panFrequencySD.Visible := rbFixed.Checked ;
+    edSineAmplitude.Value := Settings.SimEPC.SineAmplitude ;
+    edSineFrequency.Value := Settings.SimEPC.SineFrequency ;
+    cbUnits.ItemIndex := Min(Max(Settings.SimEPC.UnitsIndex,0),cbUnits.Items.Count-1) ;
+    edReleaseProbability.Value := Settings.SimEPC.ReleaseProbability ;
+    edReleasablePool.Value := Settings.SimEPC.ReleasablePool ;
+    edDepression.Value := Settings.SimEPC.Depression ;
+    edTauDepression.Value := Settings.SimEPC.TauDepression ;
+
+     Channel[0].ADCUnits := cbUnits.Text ;
      Channel[0].ADCName := 'Im' ;
 
      { Set units for amplitude parameter boxes }
@@ -135,7 +187,7 @@ begin
      scDisplay.NumPoints := NumSamplesPerBuffer ;
      scDisplay.NumChannels := 1 ;
      { Set channel information }
-     scDisplay.ChanUnits[0] := 'nA' ;
+     scDisplay.ChanUnits[0] := cbUnits.Text ;
      scDisplay.ChanName[0] := 'Im' ;
      scDisplay.ChanScale[0] := Main.SESLabIO.ADCChannelUnitsPerBit[0] ;
      scDisplay.yMin[0] := scDisplay.MinADCValue ;
@@ -155,6 +207,9 @@ begin
 
      scDisplay.SetDataBuf( @ADC ) ;
 
+     // Initialise random number generator
+     randomize ;
+
      end ;
 
 
@@ -172,7 +227,8 @@ begin
      WriteToLogFile( 'Tau(rise) = ' + edTauRise.text ) ;
      WriteToLogFile( 'Noise RMS = ' + edNoiseRMS.text ) ;
      WriteToLogFile( 'Tau(decay) = ' + edTauDecay.text ) ;
-     WriteToLogFile( 'Tau(interval) = ' + edTauInterval.text ) ;
+     WriteToLogFile( 'Frequency = ' + edFrequency.text ) ;
+     WriteToLogFile( 'FrequencySD = ' + edFrequencySD.text ) ;
      WriteToLogFile( 'Sine wave amplitude = ' + edSineAmplitude.text ) ;
      WriteToLogFile( 'Sine wave frequency = ' + edSineFrequency.text ) ;
      //WriteToLogFile( 'Low pass filter cut-off = ' + edLPFilter.text ) ;
@@ -192,7 +248,7 @@ procedure TSimMEPCFrm.MEPCSimulation ;
 var
    i,j,ch,ChOffset : Integer ;
    NumBytesToWrite : LongInt ;
-   x,xLimit,y,yMEPC,omega,MaxAmplitude : Single  ;
+   x,xLimit,y,yMEPC,omega,MaxAmplitude,Freq,Depression,SteadyStateDepression : Single  ;
    t : double ;
    Done : Boolean ;
 begin
@@ -208,14 +264,16 @@ begin
         Channel[0].InUse := True ;
 
         MaxAmplitude := 5.0*Abs(edAmplitude.Value)*
-                        Max( edTauDecay.Value/edTauInterval.Value, 1.0 ) ;
+                        Max( edTauDecay.Value*edFrequency.Value, 1.0 ) ;
+        if rbFixed.Checked then begin
+           MaxAmplitude := MaxAmplitude*Max(edReleasablePool.Value,1.0)*Max(1.-edDepression.Value,1.0) ;
+           end ;
         Channel[0].ADCMaxValue := Main.SESLabIO.ADCMaxValue ;
         Channel[0].ADCScale := MaxAmplitude / Channel[0].ADCMaxValue ;
         scDisplay.ChanScale[0] := Channel[0].ADCScale ;
         CdrFH.ADCVoltageRange :=  Channel[0].ADCCalibrationFactor
                                 * ( Channel[0].ADCScale * (scDisplay.MaxADCValue+1) ) ;
         Channel[0].ChannelOffset := 0 ;
-
 
         // Sampling interval
         cdrFH.dt := edTauRise.Value / 2.0 ;
@@ -225,13 +283,28 @@ begin
         end ;
 
      { Fill MEPC start times list }
-     t := 0.0 ;
+     t := edInitialDelay.Value ; ;
      for i := 0 to High(Sim.tStart) do begin
-         t := t - edTauInterval.Value*ln(Random) ;
-         Sim.tStart[i] := t ;
-         Sim.Amplitude[i] := RandG( edAmplitude.Value, edStDev.Value ) ;
+          Sim.tStart[i] := t ;
+          Sim.tLast := t ;
+         if rbRandom.Checked then begin
+            // Random frequency
+            t := t - ln(Random)/edFrequency.Value ;
+            Sim.Amplitude[i] := RandG( edAmplitude.Value, edStDev.Value ) ;
+            end
+         else begin
+            //Fixed frequency
+            Freq := Max(RandG(edFrequency.Value,edFrequencySD.Value),edFrequency.LoLimit) ;
+            SteadyStateDepression := (1.0 - edDepression.Value) ;
+            Depression := SteadyStateDepression
+                          - ((SteadyStateDepression-1.0)*exp(-(t - edInitialDelay.Value)/edTauDepression.Value)) ;
+            Sim.Amplitude[i] := binomial( edReleaseProbability.Value,
+                                          Round(edReleasablePool.Value*Depression))*
+                                          RandG(edAmplitude.Value,edStDev.Value) ;
+            t := t + 1.0/edFrequency.Value ;
+            end ;
          end ;
-     Sim.tLast := t ;
+
      Sim.TEndAt := edSimDuration.Value ;
      Sim.NumMEPCs := 0 ;
      Sim.LPFilterFirstCall := True ;
@@ -272,10 +345,26 @@ begin
                     yMEPC := yMEPC*(1.0-exp(-x/Max(edTauRise.Value,CDRFH.dt))) ;
                     y := y + yMEPC ;
                     { If MEPC decayed to zero, put a new one into this slot }
+
                     if x >= xLimit then begin
-                       Sim.tStart[j] := Sim.tLast - edTauInterval.Value*ln(Random) ;
-                       Sim.tLast := Sim.tStart[j] ;
-                       Sim.Amplitude[j] := RandG(edAmplitude.Value,edStDev.Value) ;
+                       if rbRandom.Checked then begin
+                          Sim.tStart[j] := Sim.tLast - ln(Random)/edFrequency.Value ;
+                          Sim.tLast := Sim.tStart[j] ;
+                          end
+                       else begin
+                          Freq := Max(RandG(edFrequency.Value,edFrequencySD.Value),edFrequency.LoLimit) ;
+                          SteadyStateDepression := (1.0 - edDepression.Value) ;
+                          Depression := SteadyStateDepression
+                                        - ((SteadyStateDepression-1.0)*exp(-(Sim.tLast - edInitialDelay.Value)/edTauDepression.Value)) ;
+                          Sim.Amplitude[j] := binomial( edReleaseProbability.Value,
+                                              Round(edReleasablePool.Value*Depression))*
+                                              RandG(edAmplitude.Value,edStDev.Value) ;
+
+                          Sim.tStart[j] := Sim.tLast + 1.0/Freq ;
+                          Sim.tLast := Sim.tStart[j] ;
+
+                          end ;
+
                        Inc(Sim.NumMEPCs) ;
                        end ;
                     end ;
@@ -331,6 +420,25 @@ begin
 
 procedure TSimMEPCFrm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+
+    // Save settings
+    Settings.SimEPC.Duration := edSimDuration.Value ;
+    Settings.SimEPC.Amplitude := edAmplitude.Value ;
+    Settings.SimEPC.AmplitudeSD := edStDev.Value ;
+    Settings.SimEPC.TauRise := edTauRise.Value ;
+    Settings.SimEPC.TauDecay := edTauDecay.Value ;
+    Settings.SimEPC.NoiseSD := edNoiseRMS.Value ;
+    Settings.SimEPC.Frequency := edFrequency.Value ;
+    Settings.SimEPC.FrequencySD := edFrequencySD.Value ;
+    Settings.SimEPC.Delay := edInitialDelay.Value ;
+    Settings.SimEPC.RandomEvents := rbRandom.Checked ;
+    Settings.SimEPC.SineAmplitude:= edSineAmplitude.Value ;
+    Settings.SimEPC.SineFrequency:= edSineFrequency.Value ;
+    Settings.SimEPC.ReleaseProbability := edReleaseProbability.Value ;
+    Settings.SimEPC.ReleasablePool := edReleasablePool.Value ;
+    Settings.SimEPC.Depression := edDepression.Value ;
+    Settings.SimEPC.TauDepression := edTauDepression.Value ;
+    Settings.SimEPC.UnitsIndex := cbUnits.ItemIndex ;
 
      if CdrFH.NumSamplesInFile > 0 then begin
         Main.mnViewSig.Enabled := True ;
@@ -479,11 +587,9 @@ procedure TSimMEPCFrm.FormResize(Sender: TObject);
   Adjust size/position of controls when form is re-sized
   ------------------------------------------------------ }
 begin
-      RecCondGrp.Top := ClientHeight - RecCondGrp.Height - 5 ;
-      SineWaveGrp.Top := RecCondGrp.Top ;
-      SineWaveGrp.Width := ClientWidth - SineWaveGrp.Left - 5 ;
-      scDisplay.Height := SineWaveGrp.Top - scDisplay.Top - 10 ;
-      scDisplay.Width := ClientWidth - scDisplay.Left - 5 ;
+
+      scDisplay.Height := max(ClientHeight - scDisplay.Top - 5,2) ;
+      scDisplay.Width := Max(ClientWidth - scDisplay.Left - 5,2) ;
 
       end;
 
@@ -519,6 +625,115 @@ begin
      scDisplay.MinADCValue := -Channel[0].ADCMaxValue -1 ;
      scDisplay.ZoomOut ;
      end ;
+
+
+procedure TSimMEPCFrm.rbRandomClick(Sender: TObject);
+begin
+     panFrequencySD.Visible := rbFixed.Checked ;
+     end;
+
+procedure TSimMEPCFrm.rbFixedClick(Sender: TObject);
+begin
+     panFrequencySD.Visible := rbFixed.Checked ;
+     end;
+
+procedure TSimMEPCFrm.cbUnitsChange(Sender: TObject);
+// -------------
+// Units changed
+// -------------
+begin
+     Channel[0].ADCUnits := cbUnits.Text ;
+     edAmplitude.Units := Channel[0].ADCUnits ;
+     edStDev.Units := Channel[0].ADCUnits ;
+     edNoiseRMS.Units := Channel[0].ADCUnits ;
+     edSineAmplitude.Units := Channel[0].ADCUnits ;
+     scDisplay.ChanUnits[0] := cbUnits.Text ;
+     end;
+
+function TSimMEPCFrm.binomial( pIn, n : Single ) : Single ;
+{ --------------------------------------------
+  Binomial random number generator
+  Returns a number from the distribution B(pIn,n)
+  where pIn = probability, n = number of items
+  (Base on Numerical Recipes code)
+  --------------------------------------------}
+var
+   p,mean,r,em,g,t,oldg,pc,pclog,y,plog,sq,zz : Single ;
+   i : Integer ;
+   quit : Boolean ;
+begin
+
+	if pIn > 0.5 then p := 1. - pIn
+                     else p := pIn ;
+
+	mean := n*p ;
+	if n <= 25.  then begin
+	    r := 0. ;
+	    for i := 1 to Round(n) do if random < p then r := r + 1. ;
+            end
+	else if mean < 1. then begin
+	    g := exp(-mean) ;
+	    t := 1. ;
+	    r := 0. ;
+	    while( (r<n) and (t<g) ) do begin
+		t := t*random ;
+		r := r + 1. ;
+                end ;
+            end
+	else begin
+	   oldg := gammln(n+1. ) ;
+	   pc := 1. - p ;
+	   plog := ln(p) ;
+	   pclog := ln(pc) ;
+	   sq := sqrt(2.*mean*pc) ;
+
+	   quit := False ;
+	   while( not quit ) do begin
+         { Make sure TAN(infinity) is not calculated }
+         repeat zz := random until (Abs(zz-0.5)>0.001) ;
+	       y := sin(zz*Pi) / cos(zz*Pi) ;
+	       em := sq*y + mean ;
+	       if (em >= 0. ) and (em < n+1. ) then begin
+		        em := Int(em) ;
+		        t := 1.2*sq*(1.+y*y)*exp(oldg-gammln(em+1. ) -
+     		          gammln(n-em+1. ) + em*plog + (n-em)*pclog) ;
+		        if( random <= t ) then quit := True ;
+            end ;
+         end ;
+	    r := em ;
+	    end ;
+
+	if ( p <> pIn ) then r := n - r ;
+	binomial := r ;
+        end ;
+
+function TSimMEPCFrm.gammln( xx : Single ) : Single ;
+var
+   stp,x,tmp,ser : Double ;
+   cof : Array[1..7] of Double ;
+   i : Integer ;
+begin
+	cof[1] := 76.18009173 ;
+	cof[2] := -86.50532033 ;
+	cof[3] := 24.01409822 ;
+	cof[4] := -1.231739516 ;
+	cof[5] := 0.120858003E-2 ;
+	cof[6] := -0.536382E-5 ;
+	stp := 2.50662827465 ;
+
+	x := (xx - 1. ) ;
+	tmp := x + 5.5 ;
+	tmp := ( x + 0.5)*ln(tmp) - tmp;
+	ser := 1. ;
+	for i := 1 to 6 do begin
+	    x := x + 1. ;
+	    ser := ser + cof[i]/x ;
+	    end ;
+	tmp := tmp + ln(stp*ser) ;
+	gammln := tmp ;
+        end ;
+
+
 
 
 end.
