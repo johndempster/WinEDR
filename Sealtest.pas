@@ -791,7 +791,7 @@ begin
      TestPulse.TStart := Max(TestPulse.Duration*0.15,0.002) ;
      TestPulse.TEnd := TestPulse.TStart + TestPulse.Duration ;
      TestPulse.RecordLength := TestPulse.TEnd + TestPulse.TStart*1.5 ;
-
+     //TestPulse.TEnd := TestPulse.TEnd - TestPulse.Duration*0.5 ;
      { Test pulse repeat period }
      TestPulse.RepeatPeriod := Max(TestPulse.RecordLength,0.1 ) ;
 

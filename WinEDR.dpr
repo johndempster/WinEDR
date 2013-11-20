@@ -55,7 +55,8 @@ uses
   InputChannelSetup in 'InputChannelSetup.pas' {InputChannelSetupFrm},
   AmpModule in 'AmpModule.pas' {Amplifier: TDataModule},
   EditProtocolUnit in 'EditProtocolUnit.pas' {EditProtocolFrm},
-  HTMLHelpViewer in '..\Components\HTMLHelpViewer.pas';
+  HTMLHelpViewer in '..\Components\HTMLHelpViewer.pas',
+  DirectorySelectUnit in 'DirectorySelectUnit.pas' {DirectorySelectFrm};
 
 {$R *.TLB}
 
@@ -66,53 +67,7 @@ begin
   Application.HelpFile := 'winedr.chm';
   Application.Title := 'WinEDR - Electrophysiology Disk Recorder';
   Application.CreateForm(TMain, Main);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   Application.CreateForm(TZeroFrm, ZeroFrm);
+  Application.CreateForm(TZeroFrm, ZeroFrm);
   Application.CreateForm(TSetAxesFrm, SetAxesFrm);
   Application.CreateForm(TSetVarFrm, SetVarFrm);
   Application.CreateForm(TPrintRecFrm, PrintRecFrm);
@@ -133,5 +88,6 @@ begin
   Application.CreateForm(TSetFitPars1frm, SetFitPars1frm);
   Application.CreateForm(TStimulator, Stimulator);
   Application.CreateForm(TAmplifier, Amplifier);
+  Application.CreateForm(TDirectorySelectFrm, DirectorySelectFrm);
   Application.Run;
 end.

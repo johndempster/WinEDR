@@ -30,6 +30,7 @@ unit InputChannelSetup;
            when more than 16 AI channel were available fixed. (by returning amNone
            for all amplifiers numbers >= MaxAmplifiers. Amplifier.GetChannelSettings()
            no longer changes channel scale factors when Amplifier type is amNone
+// 19.11.13 SetCurrentDir() now ensure file dialog box opens in correct directory           
                   }
 interface
 
@@ -648,6 +649,7 @@ begin
 
      SaveDialog.options := [ofOverwritePrompt,ofHideReadOnly,ofPathMustExist] ;
      SaveDialog.InitialDir := Settings.ProgDirectory ;
+     SetCurrentDir(Settings.ProgDirectory) ;
      SaveDialog.Title := 'Save Amplifier/Input Channel Settings' ;
      SaveDialog.FileName := '*.xml' ;
 
@@ -676,6 +678,7 @@ begin
      OpenDialog.options := [ofOverwritePrompt,ofHideReadOnly,ofPathMustExist] ;
      OpenDialog.FileName := '*.xml' ;
      OpenDialog.InitialDir := Settings.ProgDirectory ;
+     SetCurrentDir(Settings.ProgDirectory) ;
      OpenDialog.Title := 'Load Amplifier/Input Channel Settings' ;
      if OpenDialog.execute then begin
         Amplifier.LoadFromXMLFile(OpenDialog.FileName) ;

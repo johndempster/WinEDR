@@ -6,6 +6,7 @@ unit Ced1902u;
   26/02/01 Updated to use AmpModule which now contains CED 1902 support methods
   27/02/01 CED 1902 support now working
   23/05/01 Amplifier.GainValue now updated when gain changed
+  19/11/13 Com3 & Com4 added to list
   ================================================}
 
 interface
@@ -100,6 +101,8 @@ begin
      cbCED1902ComPort.clear ;
      cbCED1902ComPort.items.add( ' COM1 ' ) ;
      cbCED1902ComPort.items.add( ' COM2 ' ) ;
+     cbCED1902ComPort.items.add( ' COM3 ' ) ;
+     cbCED1902ComPort.items.add( ' COM4 ' ) ;
      cbCED1902ComPort.ItemIndex := Amplifier.CED1902.ComPort - 1 ;
 
      // Set amplifier

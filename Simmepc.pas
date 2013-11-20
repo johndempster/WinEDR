@@ -24,6 +24,7 @@ unit Simmepc;
                Optional delay added before events start
                Settings saved in INI file
   15.05.13 ... Binomial release probability and depression/facilitation added to fixed frequency trains
+  07.06.13 ... Fixed frequency variation now functions from start of trains
   }
 
 interface
@@ -301,7 +302,7 @@ begin
             Sim.Amplitude[i] := binomial( edReleaseProbability.Value,
                                           Round(edReleasablePool.Value*Depression))*
                                           RandG(edAmplitude.Value,edStDev.Value) ;
-            t := t + 1.0/edFrequency.Value ;
+            t := t + 1.0/Freq ;
             end ;
          end ;
 

@@ -63,7 +63,10 @@ unit Rec;
   28.08.12 ... Zero levels popup settings box added (on right-click over channel)
                Fixed zero levels option no longer sets levelsd to zero (only holds constant)
   10.01.13 ... VCLAMP/ICLAMP button now correctly responds to changes in clamp mode for amplifier #2
-  12.02.13 ... Stimulus support added for Digidata 1440A          
+  12.02.13 ... Stimulus support added for Digidata 1440A
+  18.11.13 ... Stimulus support for Digidata 132X added
+               Sampling interval box now updated with valid limits when changed
+               Default display grid setting now correctly applied when formf first opened
   ==============================================================================}
 interface
 
@@ -515,7 +518,8 @@ begin
         (Main.SESLabIO.LabInterfaceType = NIDAQMX) or
         (Main.SESLabIO.LabInterfaceType = CED1401_12) or           // CED 1401
         (Main.SESLabIO.LabInterfaceType = CED1401_16) or
-        (Main.SESLabIO.LabInterfaceType = Digidata1440) then
+        (Main.SESLabIO.LabInterfaceType = Digidata1440) or
+        (Main.SESLabIO.LabInterfaceType = Digidata132X) then
         StimulatorAvailable := True
      else StimulatorAvailable := False ;
 
@@ -647,6 +651,8 @@ begin
      Settings.NumChannels := Main.SESLabIO.ADCNumChannels ;
      edNumChannels.Value := Settings.NumChannels ;
 
+     Main.SESLabIO.ADCSamplingInterval := Settings.ADCSamplingInterval ;
+     Settings.ADCSamplingInterval := Main.SESLabIO.ADCSamplingInterval ;
      edSamplingInterval.Value := Settings.ADCSamplingInterval ;
      edRecordDuration.Value := Settings.RecordDuration ;
 
@@ -1067,7 +1073,7 @@ begin
        scDisplay.xMin := 0 ;
        scDisplay.xMax := scDisplay.MaxPoints-1 ;
        // Enable/disable display calibration grid
-       scDisplay.DisplayGrid := Main.mnDisplayGrid.Checked ;
+       scDisplay.DisplayGrid := Settings.DisplayGrid ;
        scDisplay.SetDataBuf( @DisplayBuf ) ;
 
        scDisplay.XOffset := (CDRFH.NumSamplesInFile*WriteBufs.NumPointsPerBlock)

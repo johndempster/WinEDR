@@ -12,16 +12,16 @@ unit WinEDR_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// File generated on 15/05/2013 11:56:25 from Type Library described below.
+// File generated on 19/11/2013 15:07:01 from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: F:\Delphi Projects\WinEDR\WinEDR.tlb (1)
+// Type Lib: E:\Delphi Projects\WinEDR\WinEDR.tlb (1)
 // LIBID: {1D3AA672-406C-4763-9645-84DE3DF7F1CA}
 // LCID: 0
 // Helpfile: 
 // HelpString: WinEDR Library
 // DepndLst: 
-//   (1) v2.0 stdole, (E:\WINDOWS\system32\STDOLE2.TLB)
+//   (1) v2.0 stdole, (C:\Windows\system32\stdole2.tlb)
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
 {$WARN SYMBOL_PLATFORM OFF}

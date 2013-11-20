@@ -531,7 +531,7 @@ begin
      // (Keep within available buffer)
      NumStimuli := Prot.NumRecords*Prot.NumRepeatsPerIncrement ;
      NumDACPoints := Round(Prot.StimulusPeriod/DACUpdateInterval)*NumStimuli ;
-     MaxDACPoints := Main.SESLabIO.DACBufferLimit div Prot.NumAOChannels ;
+     MaxDACPoints := Main.SESLabIO.DACBufferLimit div Max(Prot.NumAOChannels,1) ;
 
      if NumDACPoints > MaxDACPoints then begin
         NumDACPoints := MaxDACPoints ;

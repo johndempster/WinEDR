@@ -13,6 +13,7 @@ unit EditProtocolUnit;
 // 11.06.12 Recording parameters table now filled correctly when no default protocol exists
 //          Opened and Saved protocols now selected as default protocol if none already defined
 // 06.07.12 Modified from EditProtocolUnit from WinWCP
+// 19.11.13 SetCurrentDir() now ensure file dialog box opens in correct directory 
 
 interface
 
@@ -856,7 +857,7 @@ begin
 
     // Set DO panel visibility
     NumDOChannels := cbNumDOChannels.ItemIndex ;
-    if NumDOChannels > 0 then DO1Panel.Visible := True ;
+    if NumDOChannels > 0 then DO0Panel.Visible := True ;
     if NumDOChannels > 1 then DO1Panel.Visible := True ;
     if NumDOChannels > 2 then DO2Panel.Visible := True ;
     if NumDOChannels > 3 then DO3Panel.Visible := True ;
@@ -2179,6 +2180,7 @@ begin
 
      SaveDialog.options := [ofOverwritePrompt,ofHideReadOnly,ofPathMustExist] ;
      SaveDialog.InitialDir := Settings.VProtDirectory ;
+     SetCurrentDir(Settings.VProtDirectory) ;
      SaveDialog.Title := 'Save Stimulus Protocol' ;
      SaveDialog.FileName := '*.xml' ;
 
@@ -2205,6 +2207,7 @@ begin
      OpenDialog.options := [ofOverwritePrompt,ofHideReadOnly,ofPathMustExist] ;
      OpenDialog.FileName := '*.xml' ;//ExtractFileName( SaveDialog.FileName ) ;
      OpenDialog.InitialDir := Settings.VProtDirectory ;
+     SetCurrentDir(Settings.VProtDirectory) ;
      OpenDialog.Title := 'Load Stimulus Protocol' ;
      if OpenDialog.execute then begin
         FileName := OpenDialog.FileName ;
@@ -2274,15 +2277,6 @@ begin
         Stimulator.CreateProtocolList( cbNextProtocol ) ;
        end ;
 
-  {   Main.OpenDialog.FileName := '_' ;
-     Main.OpenDialog.InitialDir := Settings.VProtDirectory ;
-     Main.OpenDialog.Title := 'Select protocol file folder' ;
-     if Main.OpenDialog.execute then begin
-        Settings.VProtDirectory := ExtractFilePath( Main.OpenDialog.FileName ) ;
-        // Populate Next Protocol list
-        Stimulator.CreateProtocolList( cbNextProtocol ) ;
-        end ;}
-
      end ;
 
 
@@ -2295,6 +2289,7 @@ begin
      OpenWaveDialog.options := [ofOverwritePrompt,ofHideReadOnly,ofPathMustExist] ;
      OpenWaveDialog.FileName := '*.txt' ;//ExtractFileName( SaveDialog.FileName ) ;
      OpenWaveDialog.InitialDir := Settings.VProtDirectory ;
+     SetCurrentDir(Settings.VProtDirectory) ;
      OpenWaveDialog.Title := 'Load user-defined waveform' ;
 
      if OpenWaveDialog.execute then begin

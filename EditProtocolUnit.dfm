@@ -1,6 +1,6 @@
 object EditProtocolFrm: TEditProtocolFrm
-  Left = 544
-  Top = 22
+  Left = 865
+  Top = 332
   Width = 1025
   Height = 642
   Caption = 'EditProtocolFrm'
@@ -26,7 +26,7 @@ object EditProtocolFrm: TEditProtocolFrm
     Top = 200
     Width = 757
     Height = 409
-    ActivePage = RecordTab
+    ActivePage = StimulusTab
     TabOrder = 0
     OnChange = PageChange
     object RecordTab: TTabSheet
@@ -44,7 +44,7 @@ object EditProtocolFrm: TEditProtocolFrm
           Height = 21
           Hint = 'The next stimulus protocol to be used when this one completes'
           Style = csDropDownList
-          ItemHeight = 13
+          ItemHeight = 0
           ParentShowHint = False
           ShowHint = True
           Sorted = True

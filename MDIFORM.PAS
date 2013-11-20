@@ -282,6 +282,12 @@ unit Mdiform;
   V3.3.6 30.04.13 simmepc.pas Post synaptic current simulation now supports fixed intervals between events
                   and settings are saved in INI file.
    V3.3.7 15.05.13 simmepc.pas Binomial release probability and depression/facilitation added to fixed frequency trains
+   V3.3.8 07.06.13 simmepc.pas Fixed frequency variation now present from start of trains.
+   V3.3.9 06.11.13 A/D input channels can now be mapped to different physical inputs
+                   for CED 1401s, Digidatas 1320 and 1440 and ITC-16 and ITC-18
+   V3.4.0 18.11.13 Stimulus support for Digidata 132X added
+                   SetCurrentDir() now ensure file dialog box opens in correct directory
+                   CED 1902 now recognised again (Amp#s range from 0 to 3)   
   =======================================================================}
 
 interface
@@ -502,7 +508,7 @@ var
    i,ch : Integer ;
    FileName : String ;
 begin
-     Version := 'V3.3.7' ;
+     Version := 'V3.4.0' ;
      Caption := 'WinEDR - Strathclyde Electrophysiology Data Recorder ' + Version ;
 
       { Get directory which contains EDR program }
@@ -845,8 +851,10 @@ begin
      { Get the name of a data file from user }
      OpenDialog.options := [ofPathMustExist] ;
      OpenDialog.DefaultExt := DataFileExtension ;
-     if Settings.DataDirectory <> '' then
+     if Settings.DataDirectory <> '' then begin
         OpenDialog.InitialDir := Settings.DataDirectory ;
+        SetCurrentDir(Settings.DataDirectory) ;
+        end ;
      OpenDialog.Filter := format( ' EDR Files (*%s)|*%s',
                                   [DataFileExtension,DataFileExtension]) ;
      OpenDialog.Title := 'Open File ' ;
@@ -1201,8 +1209,10 @@ begin
                                   [DataFileExtension,DataFileExtension]) ;
      SaveDialog.Title := 'New Data File' ;
 
-     if Settings.DataDirectory <> '' then
+     if Settings.DataDirectory <> '' then begin
         SaveDialog.InitialDir := Settings.DataDirectory ;
+        SetCurrentDir(Settings.DataDirectory) ;
+        end ;
 
      { Create new data file }
      if SaveDialog.execute then begin
@@ -1500,8 +1510,10 @@ begin
      { Get the name of a data file from user }
      OpenDialog.options := [ofPathMustExist] ;
      OpenDialog.DefaultExt := DataFileExtension ;
-     if Settings.DataDirectory <> '' then
+     if Settings.DataDirectory <> '' then begin
         OpenDialog.InitialDir := Settings.DataDirectory ;
+        SetCurrentDir(Settings.DataDirectory) ;
+        end ;
      OpenDialog.Filter := format( ' EDR Files (*%s)|*%s',
                                   [DataFileExtension,DataFileExtension]) ;
      OpenDialog.Title := 'Append File ' ;
@@ -2054,7 +2066,10 @@ begin
      OpenDialog.DefaultExt := 'DAT' ;
 
      OpenDialog.Title := 'Import File ' ;
-     if Settings.DataDirectory <> '' then OpenDialog.InitialDir := Settings.DataDirectory ;
+     if Settings.DataDirectory <> '' then begin
+        OpenDialog.InitialDir := Settings.DataDirectory ;
+        SetCurrentDir(Settings.DataDirectory) ;
+        end ;
 
      if not OpenDialog.execute then Exit ;
 
@@ -2529,11 +2544,11 @@ var
 begin
 
      mnVP500.Enabled := False ;
-     for Amp := 1 to 2 do
+     for Amp := 0 to 3 do
        if Amplifier.AmplifierType[Amp] = amVP500 then mnVP500.Enabled := True ;
 
      mnCED1902.Enabled := False ;
-     for Amp := 1 to 2 do
+     for Amp := 0 to 3 do
        if Amplifier.AmplifierType[Amp] = amCED1902 then mnCED1902.Enabled := True ;
      end;
 
