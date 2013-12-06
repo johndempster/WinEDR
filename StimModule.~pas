@@ -1044,30 +1044,23 @@ function TStimulator.DACScaleFactor( Chan : Integer ) : Single ;
 // -----------------------------------
 var
      AmplifierDivideFactor : Single ;
-     Amp : Integer ;
 begin
 
-     AmplifierDivideFactor := 1.0 ;
-     for Amp := MaxAmplifiers-1 downto 0 do if Amplifier.AmplifierType[Amp] <> amNone then begin
-         // Get amplifier stimulus scaling factor
-         if ANSIContainsText(Prot.AOChannelUnits[Chan],'V') then begin
-            // Voltage stimulus
-            if Amplifier.VoltageCommandChannel[Amp] = Chan then
-               AmplifierDivideFactor := Amplifier.VoltageCommandScaleFactor[Amp] ;
-            end
-          else begin
-            // Current stimulus
-            if Amplifier.CurrentCommandChannel[Amp] = Chan then
-               AmplifierDivideFactor := Amplifier.CurrentCommandScaleFactor[Amp] ;
-            end ;
-          end ;
+     // Get amplifier stimulus scaling factor
+     if ANSIContainsText(Prot.AOChannelUnits[Chan],'V') then begin
+        // Voltage stimulus
+        AmplifierDivideFactor := Amplifier.VoltageCommandScaleFactor[Chan] ;
+        end
+     else begin
+        // Current stimulus
+        AmplifierDivideFactor := Amplifier.CurrentCommandScaleFactor[Chan] ;
+        end ;
 
      // Set DAC scaling factor
      Result := Main.SESLabIO.DACMaxValue/
                (AmplifierDivideFactor*Main.SESLabIO.DACVoltageRange[Chan]) ;
      if Prot.AOScale[Chan] = 0.0 then Prot.AOScale[Chan] := 1.0 ;
      if Chan < Prot.NumAOChannels then Result := Result/Prot.AOScale[Chan] ;
-
      end ;
 
 

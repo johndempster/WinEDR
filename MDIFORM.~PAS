@@ -289,8 +289,6 @@ unit Mdiform;
                    SetCurrentDir() now ensure file dialog box opens in correct directory
                    CED 1902 now recognised again (Amp#s range from 0 to 3)
    V3.4.1 20.11.13 External trigger support for Digidata 1440 updated
-   V3.4.2 02.12.13 D/A update buffering updated on Digidata 132X and CED 1401 interfaces
-                   Corruption of long protocols (~150s) fixed
   =======================================================================}
 
 interface
@@ -511,7 +509,7 @@ var
    i,ch : Integer ;
    FileName : String ;
 begin
-     Version := 'V3.4.2' ;
+     Version := 'V3.4.1' ;
      Caption := 'WinEDR - Strathclyde Electrophysiology Data Recorder ' + Version ;
 
       { Get directory which contains EDR program }

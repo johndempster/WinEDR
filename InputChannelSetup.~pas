@@ -30,9 +30,7 @@ unit InputChannelSetup;
            when more than 16 AI channel were available fixed. (by returning amNone
            for all amplifiers numbers >= MaxAmplifiers. Amplifier.GetChannelSettings()
            no longer changes channel scale factors when Amplifier type is amNone
-// 19.11.13 SetCurrentDir() now ensure file dialog box opens in correct directory
-   20.11.13 Displayed amplifier and channel settings now updated before being written to user-defined settings file
-            Settings files now have file ending set to .xml 
+// 19.11.13 SetCurrentDir() now ensure file dialog box opens in correct directory           
                   }
 interface
 

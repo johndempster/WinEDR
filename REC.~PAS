@@ -67,9 +67,6 @@ unit Rec;
   18.11.13 ... Stimulus support for Digidata 132X added
                Sampling interval box now updated with valid limits when changed
                Default display grid setting now correctly applied when formf first opened
-  20.11.13 ... A/D conversion now stopped on entry to .Newfile to allow changes to sampling rate
-               for NI boards.
-               Changes to data file name when parameters changed now .xx rather that ++++
   ==============================================================================}
 interface
 
@@ -649,9 +646,6 @@ var
    i,ch : Integer ;
 begin
 
-     // Stop A/D conversion to allow changes
-     Main.SESLabIO.ADCStop ;
-
      { Get the A/D sample offsets for each input channel }
      Main.SESLabIO.ADCNumChannels := Settings.NumChannels ;
      Settings.NumChannels := Main.SESLabIO.ADCNumChannels ;
@@ -720,6 +714,8 @@ begin
 
      // Number of chart markers still available
      edNumMarkers.text := format('%d',[MaxMarkers-MarkerList.Count]);
+
+     Main.SESLabIO.ADCStop ;
 
      end ;
 
@@ -2222,8 +2218,8 @@ function TRecordFrm.CheckNewDataFileNeeded : Boolean ;
 // ------------------------------------------------------------
 var
     NewFileNeeded : Boolean ;
-    ch,n : Integer ;
-    NewFileName,Stem : String ;
+    ch : Integer ;
+    NewFileName : String ;
 begin
 
      NewFileNeeded := False ;
@@ -2234,30 +2230,19 @@ begin
 
      if CDRFH.NumChannels <> Main.SESLabIO.ADCNumChannels then NewFileNeeded := True ;
 
-     if Abs((CDRFH.dt/Main.SESLabIO.ADCSamplingInterval)-1.0) > 1E-4 then NewFileNeeded := True ;
+     if CDRFH.dt <> Main.SESLabIO.ADCSamplingInterval then NewFileNeeded := True ;
      if CDRFH.ADCVoltageRange <> Main.SESLabIO.ADCVoltageRange then NewFileNeeded := True ;
 
      for ch := 0 to Main.SESLabIO.ADCNumChannels-1 do begin
          if Channel[ch].ADCName <> Main.SESLabIO.ADCChannelName[ch] then NewFileNeeded := True ;
          if Channel[ch].ADCUnits <> Main.SESLabIO.ADCChannelUnits[ch] then NewFileNeeded := True ;
-         if Abs((Channel[ch].ADCCalibrationFactor/Main.SESLabIO.ADCChannelVoltsPerUnit[ch])-1.0) > 1E-4 then NewFileNeeded := True ;
-         if Abs((Channel[ch].ADCAmplifierGain/Main.SESLabIO.ADCChannelGain[ch])-1.0) > 1E-4 then NewFileNeeded := True ;
+         if Channel[ch].ADCCalibrationFactor <> Main.SESLabIO.ADCChannelVoltsPerUnit[ch] then NewFileNeeded := True ;
+         if Channel[ch].ADCAmplifierGain <> Main.SESLabIO.ADCChannelGain[ch] then NewFileNeeded := True ;
         end ;
 
      if NewFileNeeded then begin
-        // Extract stem of file name
-        Stem := ANSIReplaceText( CDRFH.FileName, '.edr', '.' ) ;
-        n := Pos( '.', Stem ) ;
-        if n > 0 then Stem := LeftStr(Stem,n) ;
-
-        n := 1 ;
-        repeat
-          NewFileName := Stem + format('%d.edr',[n]) ;
-          Inc(n) ;
-          until not FileExists(NewFileName) ;
-
         // New file with '+' added to end of file name
-        CDRFH.FileName :=NewFileName ;
+        CDRFH.FileName := ANSIReplaceText( CDRFH.FileName,'.edr','+.edr') ;
         if not FileExists(NewFileName) then begin
            Main.CreateNewDataFile( CDRFH ) ;
            end
