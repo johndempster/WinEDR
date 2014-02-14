@@ -114,7 +114,7 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=3
 MinorVer=4
-Release=2
+Release=3
 Build=0
 Debug=0
 PreRelease=0
@@ -126,7 +126,7 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=Strathclyde Electrophysiology Software
 FileDescription=WinEDR - Electophysiology Disk Recorder
-FileVersion=3.4.2.0
+FileVersion=3.4.3.0
 InternalName=WinEDR
 LegalCopyright=(c) J. Dempster, University of Strathclyde, 1996-2010
 LegalTrademarks=

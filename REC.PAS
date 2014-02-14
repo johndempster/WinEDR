@@ -70,6 +70,7 @@ unit Rec;
   20.11.13 ... A/D conversion now stopped on entry to .Newfile to allow changes to sampling rate
                for NI boards.
                Changes to data file name when parameters changed now .xx rather that ++++
+  12.02.14 ... Holding potential now displays to 9999 mV             
   ==============================================================================}
 interface
 

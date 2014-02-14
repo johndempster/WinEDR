@@ -291,6 +291,9 @@ unit Mdiform;
    V3.4.1 20.11.13 External trigger support for Digidata 1440 updated
    V3.4.2 02.12.13 D/A update buffering updated on Digidata 132X and CED 1401 interfaces
                    Corruption of long protocols (~150s) fixed
+   V3.4.3 12.02.14 StimModule: Train waveshape now generate correct number of repetitions (previous n+1)
+                   SESLabIO: AD/DA buffer size increases the 16777216 samples
+
   =======================================================================}
 
 interface
@@ -511,7 +514,7 @@ var
    i,ch : Integer ;
    FileName : String ;
 begin
-     Version := 'V3.4.2' ;
+     Version := 'V3.4.3' ;
      Caption := 'WinEDR - Strathclyde Electrophysiology Data Recorder ' + Version ;
 
       { Get directory which contains EDR program }

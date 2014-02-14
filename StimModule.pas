@@ -51,6 +51,7 @@ unit StimModule;
             be set to a fixed value. D/A and A/D sampling intervals can now be set to same value
   10.07.12  .RepeatedProtocol added
   12.07.12 Modified from WinWCP StimModule.pas. Now uses XML protocols
+  12.02.13 Train waveshape now generate correct number of repetitions (previous n+1)
   =============================================}
 
 interface
@@ -614,7 +615,7 @@ begin
 
              // Pulse train
              if Prot.Stimulus[iElem].Parameters[spNumRepeats].Exists then begin
-                NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) + 1 ;
+                NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) ;
                 if Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Exists then begin
                       NumPulses := NumPulses + (Increment*
                                    Round(Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Value));
@@ -763,7 +764,7 @@ begin
 
              // Pulse train
              if Prot.Stimulus[iElem].Parameters[spNumRepeats].Exists then begin
-                NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) + 1 ;
+                NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) ;
                 if Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Exists then begin
                    NumPulses := NumPulses +
                                 Round(Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Value)

@@ -12,7 +12,7 @@ unit WinEDR_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : 1.2
-// File generated on 02/12/2013 16:44:58 from Type Library described below.
+// File generated on 12/02/2014 13:20:55 from Type Library described below.
 
 // ************************************************************************  //
 // Type Lib: E:\Delphi Projects\WinEDR\WinEDR.tlb (1)

@@ -13,7 +13,8 @@ unit EditProtocolUnit;
 // 11.06.12 Recording parameters table now filled correctly when no default protocol exists
 //          Opened and Saved protocols now selected as default protocol if none already defined
 // 06.07.12 Modified from EditProtocolUnit from WinWCP
-// 19.11.13 SetCurrentDir() now ensure file dialog box opens in correct directory 
+// 19.11.13 SetCurrentDir() now ensure file dialog box opens in correct directory
+// 12.02.13 Train waveshape now generate correct number of repetitions (previous n+1)
 
 interface
 
@@ -1456,7 +1457,7 @@ begin
      iRight := pbDisplay.Width - pbDisplay.canvas.TextWidth(' ') ;
 
      // Display stimulus waveform duration
-     s := format('%.5g %s',[Prot.StimulusPeriod*TScale,TUnits]) ;
+     s := format('%.6g %s',[Prot.StimulusPeriod*TScale,TUnits]) ;
      iBottom := iBottom - pbDisplay.Canvas.TextHeight(s) ;
      pbDisplay.Canvas.TextOut( iRight - pbDisplay.Canvas.TextWidth(s),iBottom,s) ;
      iBottom := iBottom - 1 ;
@@ -1554,7 +1555,7 @@ begin
 
                  // Pulse train
                 if Prot.Stimulus[iElem].Parameters[spNumRepeats].Exists then begin
-                   NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) + 1 ;
+                   NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) ;
                    if Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Exists then begin
                       NumPulses := NumPulses +
                                    Round(Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Value)
@@ -1728,7 +1729,7 @@ begin
 
                  // Pulse train
                 if Prot.Stimulus[iElem].Parameters[spNumRepeats].Exists then begin
-                   NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) + 1 ;
+                   NumPulses := Round(Prot.Stimulus[iElem].Parameters[spNumRepeats].Value) ;
                    if Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Exists then begin
                       NumPulses := NumPulses +
                                    Round(Prot.Stimulus[iElem].Parameters[spNumRepeatsInc].Value)

@@ -1,6 +1,6 @@
 object EditProtocolFrm: TEditProtocolFrm
-  Left = 865
-  Top = 332
+  Left = 610
+  Top = 337
   Width = 1025
   Height = 642
   Caption = 'EditProtocolFrm'
@@ -44,7 +44,7 @@ object EditProtocolFrm: TEditProtocolFrm
           Height = 21
           Hint = 'The next stimulus protocol to be used when this one completes'
           Style = csDropDownList
-          ItemHeight = 0
+          ItemHeight = 13
           ParentShowHint = False
           ShowHint = True
           Sorted = True
@@ -10910,7 +10910,7 @@ object EditProtocolFrm: TEditProtocolFrm
       Top = 40
       Width = 147
       Height = 97
-      ActivePage = AO3Tab
+      ActivePage = AO2Tab
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
